@@ -21,25 +21,62 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.config.init;
+package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.config.WebMvcConfig;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import at.dom_l.task_manager.models.UserRole;
+import at.dom_l.task_manager.models.dto.UserDto;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-public class WebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+@Data
+public class User implements UserDetails {
 
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {WebMvcConfig.class};
+    private int id;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String password;
+    private List<Task> ownedTasks;
+    private List<Task> assignedTasks;
+    private List<Project> ownedProjects;
+    private List<Project> assignedProjects;
+    private UserRole role;
+
+    public UserDto toDto() {
+        return UserDto.builder()
+                .id(id)
+                .username(username)
+                .firstName(firstName)
+                .lastName(lastName)
+                .build();
     }
 
     @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return null;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(this.role.toAuthority());
     }
 
     @Override
-    protected String[] getServletMappings() {
-        return new String[] {"/"};
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -21,25 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.config.init;
+package at.dom_l.task_manager.models;
 
-import at.dom_l.task_manager.config.WebMvcConfig;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import org.springframework.security.core.GrantedAuthority;
 
-public class WebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+public enum UserRole {
 
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {WebMvcConfig.class};
-    }
+    ROLE_ADMIN, ROLE_USER;
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return null;
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] {"/"};
+    public GrantedAuthority toAuthority() {
+        return this::name;
     }
 }

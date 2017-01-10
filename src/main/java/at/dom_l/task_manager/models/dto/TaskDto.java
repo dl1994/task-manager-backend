@@ -21,25 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.config.init;
+package at.dom_l.task_manager.models.dto;
 
-import at.dom_l.task_manager.config.WebMvcConfig;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import at.dom_l.task_manager.models.TaskStatus;
+import lombok.Builder;
+import lombok.Data;
 
-public class WebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+@Data
+@Builder
+public class TaskDto {
 
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {WebMvcConfig.class};
-    }
-
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return null;
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] {"/"};
-    }
+    private Integer id;
+    private Integer priority;
+    private String subject;
+    private String assignee;
+    private Long createdTimestamp;
+    private Long startedTimestamp;
+    private Long dueTimestamp;
+    private Long finishedTimestamp;
+    private TaskStatus status;
 }

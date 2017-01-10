@@ -21,25 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.config.init;
+package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.config.WebMvcConfig;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import at.dom_l.task_manager.models.ProjectStatus;
+import at.dom_l.task_manager.models.dto.ProjectDto;
+import lombok.Builder;
+import lombok.Data;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class WebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+@Data
+@Builder
+public class Project {
 
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {WebMvcConfig.class};
-    }
+    private Integer id;
+    private String name;
+    private String description;
+    private User owner;
+    private ProjectStatus status;
+    private List<User> involvedUsers;
+    private List<Task> tasks;
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return null;
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] {"/"};
+    public ProjectDto toDto() {
+        return ProjectDto.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .owner(owner.toDto())
+                .status(status)
+                .involvedUsers(involvedUsers
+                        .stream()
+                        .map(User::toDto)
+                        .collect(Collectors.toList())
+                ).build();
     }
 }
