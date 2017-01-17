@@ -24,12 +24,16 @@
 package at.dom_l.task_manager.models.dto;
 
 import at.dom_l.task_manager.models.ProjectStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectDto {
 
     private Integer id;

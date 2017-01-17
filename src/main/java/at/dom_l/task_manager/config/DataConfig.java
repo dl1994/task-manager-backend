@@ -21,21 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.db;
+package at.dom_l.task_manager.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import javax.sql.DataSource;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Comment {
+@Configuration
+@EnableTransactionManagement(proxyTargetClass = true)
+public class DataConfig {
 
-    private Integer id;
-    private Task task;
-    private User poster;
-    private String text;
+    @Autowired
+    private DataSource dataSource;
+
+    @Bean
+    @Autowired
+    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(sessionFactory);
+        return transactionManager;
+    }
+
+    @Bean
+    @Autowired
+    public HibernateTemplate hibernateTemplate(SessionFactory sessionFactory) {
+        return new HibernateTemplate(sessionFactory);
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setPackagesToScan(User.class.getPackage().getName());
+        sessionFactory.setDataSource(this.dataSource);
+        return sessionFactory;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .build();
+    }
 }

@@ -25,13 +25,17 @@ package at.dom_l.task_manager.models.db;
 
 import at.dom_l.task_manager.models.ProjectStatus;
 import at.dom_l.task_manager.models.dto.ProjectDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     private Integer id;

@@ -24,11 +24,15 @@
 package at.dom_l.task_manager.models.dto;
 
 import at.dom_l.task_manager.models.TaskStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskDto {
 
     private Integer id;

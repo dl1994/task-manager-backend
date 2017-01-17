@@ -67,18 +67,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(this.authenticationHandlers)
                 .failureHandler(this.authenticationHandlers)
                 .permitAll();
-
         http.logout()
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(this.authenticationHandlers)
                 .deleteCookies("JSESSIONID")
                 .permitAll();
-
         http.authorizeRequests().antMatchers("/version")
                 .permitAll().anyRequest().authenticated();
-
         http.httpBasic();
-
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
     }

@@ -37,8 +37,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import java.util.List;
 
-@Import({SecurityConfig.class})
 @Configuration
+@Import({SecurityConfig.class, DataConfig.class})
 @ComponentScan(basePackageClasses = {AppController.class, UserService.class, AuthenticationHandlers.class})
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 

@@ -25,7 +25,10 @@ package at.dom_l.task_manager.models.db;
 
 import at.dom_l.task_manager.models.UserRole;
 import at.dom_l.task_manager.models.dto.UserDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
@@ -33,9 +36,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
-    private int id;
+    private Integer id;
     private String username;
     private String firstName;
     private String lastName;

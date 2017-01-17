@@ -21,21 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.db;
+package at.dom_l.task_manager.services;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import at.dom_l.task_manager.models.db.Project;
+import org.springframework.stereotype.Service;
+import java.util.stream.Stream;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Comment {
+@Service
+public class ProjectService {
 
-    private Integer id;
-    private Task task;
-    private User poster;
-    private String text;
+    Stream<Project> getProjectsForUser(int userId) {
+        throw new UnsupportedOperationException();
+    }
+
+    Project createOrUpdateProject(Project project) {
+        throw new UnsupportedOperationException();
+    }
 }
