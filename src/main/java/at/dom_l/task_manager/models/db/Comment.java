@@ -23,19 +23,49 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.db;
 
+import at.dom_l.task_manager.models.dto.CommentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Data
+@Table
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
 
+    private static final int MAX_COMMENT_LENGTH = 500;
+
+    @Id
+    @GeneratedValue
     private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "task")
     private Task task;
+    @ManyToOne
+    @JoinColumn(name = "poster")
     private User poster;
+    @Column(nullable = false, length = MAX_COMMENT_LENGTH)
     private String text;
+    @Column(nullable = false)
+    private Long postTimestamp;
+
+    public CommentDto toDto() {
+        return CommentDto.builder()
+                .id(this.id)
+                .poster(this.poster.toDto())
+                .text(this.text)
+                .postTimestamp(this.postTimestamp)
+                .build();
+    }
 }

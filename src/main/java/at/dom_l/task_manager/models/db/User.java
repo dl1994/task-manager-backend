@@ -31,33 +31,62 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 @Data
+@Table
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
 
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final long serialVersionUID = 329460067141314050L;
+
+    @Id
+    @GeneratedValue
     private Integer id;
+    @Column(unique = true, nullable = false, length = MAX_NAME_LENGTH)
     private String username;
+    @Column(length = MAX_NAME_LENGTH)
     private String firstName;
+    @Column(length = MAX_NAME_LENGTH)
     private String lastName;
+    @Column(nullable = false)
     private String password;
-    private List<Task> ownedTasks;
-    private List<Task> assignedTasks;
-    private List<Project> ownedProjects;
-    private List<Project> assignedProjects;
+    @Enumerated(EnumType.ORDINAL)
     private UserRole role;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+    private List<Task> ownedTasks;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
+    private List<Task> assignedTasks;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+    private List<Project> ownedProjects;
+    @ManyToMany(mappedBy = "involvedUsers")
+    private List<Project> assignedProjects;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poster")
+    private List<Comment> comments;
 
     public UserDto toDto() {
         return UserDto.builder()
-                .id(id)
-                .username(username)
-                .firstName(firstName)
-                .lastName(lastName)
+                .id(this.id)
+                .username(this.username)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .role(this.role)
                 .build();
     }
 

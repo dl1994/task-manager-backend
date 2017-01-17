@@ -38,7 +38,7 @@ public class TaskDto {
     private Integer id;
     private Integer priority;
     private String subject;
-    private String assignee;
+    private UserDto assignee;
     private Long createdTimestamp;
     private Long startedTimestamp;
     private Long dueTimestamp;

@@ -21,77 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.db;
+package at.dom_l.task_manager.models.dto;
 
-import at.dom_l.task_manager.models.TaskStatus;
-import at.dom_l.task_manager.models.dto.TaskDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.util.List;
 
 @Data
-@Table
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class CommentDto {
 
-    private static final int MAX_SUBJECT_LENGTH = 50;
-
-    @Id
-    @GeneratedValue
     private Integer id;
-    @Column(nullable = false)
-    private Integer priority;
-    @Column(nullable = false, length = MAX_SUBJECT_LENGTH)
-    private String subject;
-    @ManyToOne
-    @JoinColumn(name = "owner", nullable = false)
-    private User owner;
-    @ManyToOne
-    @JoinColumn(name = "assignee")
-    private User assignee;
-    @ManyToOne
-    @JoinColumn(name = "project")
-    private Project project;
-    @Column(nullable = false)
-    private Long createdTimestamp;
-    @Column
-    private Long startedTimestamp;
-    @Column
-    private Long dueTimestamp;
-    @Column
-    private Long finishedTimestamp;
-    @Enumerated(EnumType.ORDINAL)
-    private TaskStatus status;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
-    private List<Comment> comments;
-
-    public TaskDto toDto() {
-        return TaskDto.builder()
-                .id(this.id)
-                .priority(this.priority)
-                .subject(this.subject)
-                .assignee(this.assignee.toDto())
-                .createdTimestamp(this.createdTimestamp)
-                .startedTimestamp(this.startedTimestamp)
-                .dueTimestamp(this.dueTimestamp)
-                .finishedTimestamp(this.finishedTimestamp)
-                .status(this.status)
-                .build();
-    }
+    private UserDto poster;
+    private String text;
+    private Long postTimestamp;
 }

@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @Builder
@@ -41,5 +40,4 @@ public class ProjectDto {
     private String description;
     private UserDto owner;
     private ProjectStatus status;
-    private List<UserDto> involvedUsers;
 }

@@ -29,34 +29,61 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
+@Table
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
 
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MAX_DESCRIPTION_LENGTH = 500;
+
+    @Id
+    @GeneratedValue
     private Integer id;
+    @Column(nullable = false, length = MAX_NAME_LENGTH)
     private String name;
+    @Column(length = MAX_DESCRIPTION_LENGTH)
     private String description;
+    @ManyToOne
+    @JoinColumn(name = "owner")
     private User owner;
+    @Enumerated(EnumType.ORDINAL)
     private ProjectStatus status;
+    @ManyToMany
+    @JoinTable(
+            name = "ProjectParticipants",
+            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "projectId", referencedColumnName = "id")
+    )
     private List<User> involvedUsers;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
     private List<Task> tasks;
 
     public ProjectDto toDto() {
         return ProjectDto.builder()
-                .id(id)
-                .name(name)
-                .description(description)
-                .owner(owner.toDto())
-                .status(status)
-                .involvedUsers(involvedUsers
-                        .stream()
-                        .map(User::toDto)
-                        .collect(Collectors.toList())
-                ).build();
+                .id(this.id)
+                .name(this.name)
+                .description(this.description)
+                .owner(this.owner.toDto())
+                .status(this.status)
+                .build();
     }
 }

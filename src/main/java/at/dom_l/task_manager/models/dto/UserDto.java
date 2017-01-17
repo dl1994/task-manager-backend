@@ -23,6 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.dto;
 
+import at.dom_l.task_manager.models.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,4 +39,5 @@ public class UserDto {
     private String username;
     private String firstName;
     private String lastName;
+    private UserRole role;
 }
