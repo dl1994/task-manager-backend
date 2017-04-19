@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 public class NotificationResp {
     
     private Integer id;
-    private UserResp user;
+    private Integer userId;
     private String text;
     private Long timestamp;
     private Notification.Status status;

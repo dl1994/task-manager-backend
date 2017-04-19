@@ -23,6 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.resp;
 
+import at.dom_l.task_manager.models.db.ProjectParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,11 +33,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResp {
+public class ProjectParticipantResp {
     
-    private Integer id;
-    private Integer posterId;
-    private String text;
-    private Long postTimestamp;
-    private Long lastEditTimestamp;
+    private Integer projectId;
+    private Integer participantId;
+    private ProjectParticipant.Role role;
 }

@@ -34,8 +34,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -45,10 +43,10 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
-
+    
     private static final int MAX_NAME_LENGTH = 30;
     private static final int MAX_DESCRIPTION_LENGTH = 500;
-
+    
     @Id
     @GeneratedValue
     private Integer id;
@@ -56,32 +54,22 @@ public class Project {
     private String name;
     @Column(length = MAX_DESCRIPTION_LENGTH)
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "owner")
-    private User owner;
+    @Column(nullable = false)
+    private Integer ownerId; // TODO: add constraint
     @Enumerated(EnumType.ORDINAL)
     private Status status;
-//    @ManyToMany
-//    @JoinTable(
-//            name = "ProjectParticipants",
-//            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "projectId", referencedColumnName = "id")
-//    )
-//    private List<User> involvedUsers;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-//    private List<Task> tasks;
-
+    
+    public enum Status {
+        ACTIVE, ARCHIVED
+    }
+    
     public ProjectResp toResp() {
         return ProjectResp.builder()
                 .id(this.id)
                 .name(this.name)
                 .description(this.description)
-                .owner(this.owner.toResp())
+                .ownerId(this.ownerId)
                 .status(this.status)
                 .build();
-    }
-    
-    public enum Status {
-        ACTIVE, ARCHIVED
     }
 }

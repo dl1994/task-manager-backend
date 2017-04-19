@@ -38,7 +38,7 @@ public class TaskResp {
     private Integer id;
     private Integer priority;
     private String subject;
-    private UserResp assignee;
+    private Integer assigneeId;
     private Long createdTimestamp;
     private Long startedTimestamp;
     private Long dueTimestamp;

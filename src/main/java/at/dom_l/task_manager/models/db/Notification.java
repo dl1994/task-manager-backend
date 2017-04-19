@@ -34,8 +34,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -51,9 +49,8 @@ public class Notification {
     @Id
     @GeneratedValue
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "user")
-    private User user;
+    @Column(nullable = false)
+    private Integer userId; // TODO: add constraint
     @Column(nullable = false, length = MAX_NOTIFICATION_LENGTH)
     private String text;
     @Column(nullable = false)
@@ -65,23 +62,23 @@ public class Notification {
     @Column(nullable = false)
     private Integer target;
     
-    public NotificationResp toResp() {
-        return NotificationResp.builder()
-                .id(this.id)
-                .user(this.user.toResp())
-                .text(this.text)
-                .timestamp(this.timestamp)
-                .status(this.status)
-                .type(this.type)
-                .target(this.target)
-                .build();
-    }
-    
     public enum Status {
         UNSEEN, SEEN, CLICKED
     }
     
     public enum Type {
         PROJECT, TASK, COMMENT
+    }
+    
+    public NotificationResp toResp() {
+        return NotificationResp.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .text(this.text)
+                .timestamp(this.timestamp)
+                .status(this.status)
+                .type(this.type)
+                .target(this.target)
+                .build();
     }
 }

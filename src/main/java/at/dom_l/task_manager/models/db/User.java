@@ -50,7 +50,7 @@ import java.util.Collections;
 public class User implements UserDetails {
 
     private static final int MAX_NAME_LENGTH = 30;
-    private static final long serialVersionUID = 7717753194949904456L;
+    private static final long serialVersionUID = -3486687607400525759L;
     
     @Id
     @GeneratedValue
@@ -65,28 +65,6 @@ public class User implements UserDetails {
     private String password;
     @Enumerated(EnumType.ORDINAL)
     private Role role;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-//    private List<Task> ownedTasks;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
-//    private List<Task> assignedTasks;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-//    private List<Project> ownedProjects;
-//    @ManyToMany(mappedBy = "involvedUsers")
-//    private List<Project> assignedProjects;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poster")
-//    private List<Comment> comments;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-//    private List<Notification> notifications;
-
-    public UserResp toResp() {
-        return UserResp.builder()
-                .id(this.id)
-                .username(this.username)
-                .firstName(this.firstName)
-                .lastName(this.lastName)
-                .role(this.role)
-                .build();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -120,5 +98,15 @@ public class User implements UserDetails {
         public GrantedAuthority toAuthority() {
             return this::name;
         }
+    }
+    
+    public UserResp toResp() {
+        return UserResp.builder()
+                .id(this.id)
+                .username(this.username)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .role(this.role)
+                .build();
     }
 }

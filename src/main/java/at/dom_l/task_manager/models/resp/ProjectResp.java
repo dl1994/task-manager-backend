@@ -34,10 +34,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectResp {
-
+    
     private Integer id;
+    private Integer ownerId;
     private String name;
     private String description;
-    private UserResp owner;
     private Project.Status status;
 }

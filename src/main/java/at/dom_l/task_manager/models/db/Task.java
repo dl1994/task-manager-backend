@@ -34,8 +34,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -55,15 +53,10 @@ public class Task {
     private Integer priority;
     @Column(nullable = false, length = MAX_SUBJECT_LENGTH)
     private String subject;
-    @ManyToOne
-    @JoinColumn(name = "owner", nullable = false)
-    private User owner;
-    @ManyToOne
-    @JoinColumn(name = "assignee")
-    private User assignee;
-    @ManyToOne
-    @JoinColumn(name = "project")
-    private Project project;
+    @Column
+    private Integer assigneeId; // TODO: add constraint
+    @Column(nullable = false)
+    private Integer projectId; // TODO: add constraint
     @Column(nullable = false)
     private Long createdTimestamp;
     @Column
@@ -74,24 +67,22 @@ public class Task {
     private Long finishedTimestamp;
     @Enumerated(EnumType.ORDINAL)
     private Status status;
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
-//    private List<Comment> comments;
-
+    
+    public enum Status {
+        NEW, IN_PROGRESS, DONE
+    }
+    
     public TaskResp toResp() {
         return TaskResp.builder()
                 .id(this.id)
                 .priority(this.priority)
                 .subject(this.subject)
-                .assignee(this.assignee.toResp())
+                .assigneeId(this.assigneeId)
                 .createdTimestamp(this.createdTimestamp)
                 .startedTimestamp(this.startedTimestamp)
                 .dueTimestamp(this.dueTimestamp)
                 .finishedTimestamp(this.finishedTimestamp)
                 .status(this.status)
                 .build();
-    }
-    
-    public enum Status {
-        NEW, IN_PROGRESS, DONE
     }
 }

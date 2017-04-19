@@ -32,8 +32,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -49,12 +47,10 @@ public class Comment {
     @Id
     @GeneratedValue
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "task")
-    private Task task;
-    @ManyToOne
-    @JoinColumn(name = "poster")
-    private User poster;
+    @Column(nullable = false)
+    private Integer taskId; // TODO: add constraint
+    @Column(nullable = false)
+    private Integer posterId; // TODO: add constraint
     @Column(nullable = false, length = MAX_COMMENT_LENGTH)
     private String text;
     @Column(nullable = false)
@@ -65,7 +61,7 @@ public class Comment {
     public CommentResp toResp() {
         return CommentResp.builder()
                 .id(this.id)
-                .poster(this.poster.toResp())
+                .posterId(this.posterId)
                 .text(this.text)
                 .postTimestamp(this.postTimestamp)
                 .lastEditTimestamp(this.lastEditTimestamp)
