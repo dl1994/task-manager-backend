@@ -23,28 +23,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.dao;
 
-import at.dom_l.task_manager.models.db.User;
+import at.dom_l.task_manager.models.db.Notification;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
+import java.util.List;
 
 @Repository
-public class UserDao extends AbstractDao<User, Integer> {
+public class NotificationDao extends AbstractDao<Notification, Integer> {
     
     @Autowired
-    public UserDao(SessionFactory sessionFactory) {
+    public NotificationDao(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
     
     @Override
-    protected Class<User> getModelClass() {
-        return User.class;
+    protected Class<Notification> getModelClass() {
+        return Notification.class;
     }
     
-    public Optional<User> getUserByUsername(String username) {
-        return this.createQuery("from User where username=:username")
-                .setParameter("username", username)
-                .uniqueResultOptional();
+    public List<Notification> getNotifications(Integer userId) {
+        return this.createQuery("from Notification where userId=:userId")
+                .setParameter("userId", userId)
+                .getResultList(); // TODO: add pagination
     }
 }

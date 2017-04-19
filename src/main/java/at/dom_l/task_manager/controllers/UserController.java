@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
-import java.util.Optional;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -59,9 +58,7 @@ public class UserController {
     
     @RequestMapping(value = "/me", method = GET)
     public UserResp getMe(@AuthenticationPrincipal User user) {
-        return Optional.ofNullable(user)
-                .map(User::toResp)
-                .orElseThrow(UserNotFoundException::new);
+        return user.toResp();
     }
     
     @RequestMapping(value = "/{userId}", method = GET)

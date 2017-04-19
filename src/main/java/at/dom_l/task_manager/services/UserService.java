@@ -61,7 +61,7 @@ public class UserService implements UserDetailsService {
     
     @Transactional(readOnly = true)
     public Optional<User> loadUserById(Integer id) {
-        return this.userDao.getUserById(id);
+        return this.userDao.getByPrimaryKey(id);
     }
     
     private String encoded(String password) {
@@ -123,15 +123,10 @@ public class UserService implements UserDetailsService {
     }
     
     private User getUserById(Integer userId) {
-        return this.userDao.getUserById(userId)
-                .orElseThrow(() -> new UserNotFoundException("no user with id " + userId));
+        return this.userDao.getByPrimaryKey(userId)
+                .orElseThrow(() -> new UserNotFoundException("no user with id: " + userId));
     }
-    
-//    @Transactional(readOnly = true)
-//    public List<Task> getOwnedTasks(Integer userId) {
-//        return this.getList(userId, User::getOwnedTasks);
-//    }
-//
+
 //    @Transactional(readOnly = true)
 //    public List<Task> getAssignedTasks(Integer userId) {
 //        return this.getList(userId, User::getAssignedTasks);
@@ -152,12 +147,7 @@ public class UserService implements UserDetailsService {
 //        return this.getList(userId, User::getComments);
 //    }
 //
-//    @Transactional(readOnly = true)
-//    public List<Notification> getNotifications(Integer userId) {
-//        return this.getList(userId, User::getNotifications);
-//    }
-//
 //    private <T> List<T> getList(Integer userId, Function<User, List<T>> listGetter) {
-//        return listGetter.apply(this.getUserById(userId));
+//        return listGetter.apply(this.getByPrimaryKey(userId));
 //    }
 }

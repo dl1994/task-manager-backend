@@ -23,28 +23,50 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.dao;
 
-import at.dom_l.task_manager.models.db.User;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.hibernate.query.Query;
+import java.io.Serializable;
 import java.util.Optional;
 
-@Repository
-public class UserDao extends AbstractDao<User, Integer> {
+public abstract class AbstractDao<M, PK extends Serializable> {
     
-    @Autowired
-    public UserDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
+    private final SessionFactory sessionFactory;
+    
+    protected AbstractDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
     
-    @Override
-    protected Class<User> getModelClass() {
-        return User.class;
+    protected Session currentSession() {
+        return this.sessionFactory.getCurrentSession();
     }
     
-    public Optional<User> getUserByUsername(String username) {
-        return this.createQuery("from User where username=:username")
-                .setParameter("username", username)
-                .uniqueResultOptional();
+    protected Query<M> createQuery(String query) {
+        return this.currentSession()
+                .createQuery(query, this.getModelClass());
+    }
+    
+    protected abstract Class<M> getModelClass();
+    
+    public Optional<M> getByPrimaryKey(PK primaryKey) {
+        return this.currentSession()
+                .byId(this.getModelClass())
+                .loadOptional(primaryKey);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public PK create(M model) {
+        return (PK) this.currentSession()
+                .save(model);
+    }
+    
+    public void update(M model) {
+        this.currentSession()
+                .update(model);
+    }
+    
+    public void delete(M model) {
+        this.currentSession()
+                .delete(model);
     }
 }
