@@ -23,8 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.models.TaskStatus;
-import at.dom_l.task_manager.models.dto.TaskDto;
+import at.dom_l.task_manager.models.resp.TaskResp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -77,21 +76,25 @@ public class Task {
     @Column
     private Long finishedTimestamp;
     @Enumerated(EnumType.ORDINAL)
-    private TaskStatus status;
+    private Status status;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
     private List<Comment> comments;
 
-    public TaskDto toDto() {
-        return TaskDto.builder()
+    public TaskResp toResp() {
+        return TaskResp.builder()
                 .id(this.id)
                 .priority(this.priority)
                 .subject(this.subject)
-                .assignee(this.assignee.toDto())
+                .assignee(this.assignee.toResp())
                 .createdTimestamp(this.createdTimestamp)
                 .startedTimestamp(this.startedTimestamp)
                 .dueTimestamp(this.dueTimestamp)
                 .finishedTimestamp(this.finishedTimestamp)
                 .status(this.status)
                 .build();
+    }
+    
+    public enum Status {
+        NEW, IN_PROGRESS, DONE
     }
 }

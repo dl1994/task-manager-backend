@@ -25,6 +25,7 @@ package at.dom_l.task_manager.config;
 
 import at.dom_l.task_manager.controllers.AppController;
 import at.dom_l.task_manager.components.AuthenticationHandlers;
+import at.dom_l.task_manager.dao.UserDao;
 import at.dom_l.task_manager.services.UserService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,12 @@ import java.util.List;
 
 @Configuration
 @Import({SecurityConfig.class, DataConfig.class})
-@ComponentScan(basePackageClasses = {AppController.class, UserService.class, AuthenticationHandlers.class})
+@ComponentScan(basePackageClasses = {
+        UserDao.class,
+        UserService.class,
+        AppController.class,
+        AuthenticationHandlers.class
+})
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Override
@@ -50,7 +56,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 }

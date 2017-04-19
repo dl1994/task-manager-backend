@@ -21,54 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.db;
+package at.dom_l.task_manager.models.resp;
 
-import at.dom_l.task_manager.models.resp.CommentResp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Data
-@Table
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class CommentResp {
     
-    private static final int MAX_COMMENT_LENGTH = 1_000;
-    
-    @Id
-    @GeneratedValue
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "task")
-    private Task task;
-    @ManyToOne
-    @JoinColumn(name = "poster")
-    private User poster;
-    @Column(nullable = false, length = MAX_COMMENT_LENGTH)
+    private UserResp poster;
     private String text;
-    @Column(nullable = false)
     private Long postTimestamp;
-    @Column(nullable = false)
     private Long lastEditTimestamp;
-    
-    public CommentResp toResp() {
-        return CommentResp.builder()
-                .id(this.id)
-                .poster(this.poster.toResp())
-                .text(this.text)
-                .postTimestamp(this.postTimestamp)
-                .lastEditTimestamp(this.lastEditTimestamp)
-                .build();
-    }
 }

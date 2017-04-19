@@ -23,8 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.models.ProjectStatus;
-import at.dom_l.task_manager.models.dto.ProjectDto;
+import at.dom_l.task_manager.models.resp.ProjectResp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -66,7 +65,7 @@ public class Project {
     @JoinColumn(name = "owner")
     private User owner;
     @Enumerated(EnumType.ORDINAL)
-    private ProjectStatus status;
+    private Status status;
     @ManyToMany
     @JoinTable(
             name = "ProjectParticipants",
@@ -77,13 +76,17 @@ public class Project {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
     private List<Task> tasks;
 
-    public ProjectDto toDto() {
-        return ProjectDto.builder()
+    public ProjectResp toResp() {
+        return ProjectResp.builder()
                 .id(this.id)
                 .name(this.name)
                 .description(this.description)
-                .owner(this.owner.toDto())
+                .owner(this.owner.toResp())
                 .status(this.status)
                 .build();
+    }
+    
+    public enum Status {
+        ACTIVE, ARCHIVED
     }
 }

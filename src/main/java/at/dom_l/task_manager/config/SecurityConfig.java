@@ -44,20 +44,24 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+    
+    private final AuthenticationHandlers authenticationHandlers;
+    
     @Autowired
-    private AuthenticationHandlers authenticationHandlers;
-
+    public SecurityConfig(AuthenticationHandlers authenticationHandlers) {
+        this.authenticationHandlers = authenticationHandlers;
+    }
+    
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth, UserService userService) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(this.passwordEncoder());
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -72,13 +76,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(this.authenticationHandlers)
                 .deleteCookies("JSESSIONID")
                 .permitAll();
-        http.authorizeRequests().antMatchers("/version")
+        http.authorizeRequests().antMatchers("/status", "/users/me")
                 .permitAll().anyRequest().authenticated();
         http.httpBasic();
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
     }
-
+    
     private static AccessDeniedHandler accessDeniedHandler() {
         return (request, response, exception) -> response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }

@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models;
+package at.dom_l.task_manager.exceptions;
 
-import org.springframework.security.core.GrantedAuthority;
-
-public enum UserRole {
-
-    ROLE_ADMIN, ROLE_USER;
-
-    public GrantedAuthority toAuthority() {
-        return this::name;
+public class PasswordException extends RuntimeException {
+    
+    private static final long serialVersionUID = -702316042431305661L;
+    
+    public PasswordException() {}
+    
+    public PasswordException(String message) {
+        super(message);
     }
 }

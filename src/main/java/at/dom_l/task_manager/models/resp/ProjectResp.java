@@ -21,8 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models;
+package at.dom_l.task_manager.models.resp;
 
-public enum TaskStatus {
-    NEW, IN_PROGRESS, DONE
+import at.dom_l.task_manager.models.db.Project;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProjectResp {
+
+    private Integer id;
+    private String name;
+    private String description;
+    private UserResp owner;
+    private Project.Status status;
 }

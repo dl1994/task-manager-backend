@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.dto;
+package at.dom_l.task_manager.models.resp;
 
-import at.dom_l.task_manager.models.TaskStatus;
+import at.dom_l.task_manager.models.db.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,15 +33,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskDto {
+public class UserResp {
 
     private Integer id;
-    private Integer priority;
-    private String subject;
-    private UserDto assignee;
-    private Long createdTimestamp;
-    private Long startedTimestamp;
-    private Long dueTimestamp;
-    private Long finishedTimestamp;
-    private TaskStatus status;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private User.Role role;
 }

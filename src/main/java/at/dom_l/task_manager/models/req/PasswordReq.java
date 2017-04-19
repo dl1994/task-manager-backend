@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.dto;
+package at.dom_l.task_manager.models.req;
 
-import at.dom_l.task_manager.models.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,11 +32,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-
-    private Integer id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private UserRole role;
+public class PasswordReq {
+    
+    private String oldPassword;
+    private String newPassword;
 }

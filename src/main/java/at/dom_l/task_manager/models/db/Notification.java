@@ -23,13 +23,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.models.resp.CommentResp;
+import at.dom_l.task_manager.models.resp.NotificationResp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -42,33 +44,44 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class Notification {
     
-    private static final int MAX_COMMENT_LENGTH = 1_000;
+    private static final int MAX_NOTIFICATION_LENGTH = 500;
     
     @Id
     @GeneratedValue
     private Integer id;
     @ManyToOne
-    @JoinColumn(name = "task")
-    private Task task;
-    @ManyToOne
-    @JoinColumn(name = "poster")
-    private User poster;
-    @Column(nullable = false, length = MAX_COMMENT_LENGTH)
+    @JoinColumn(name = "user")
+    private User user;
+    @Column(nullable = false, length = MAX_NOTIFICATION_LENGTH)
     private String text;
     @Column(nullable = false)
-    private Long postTimestamp;
+    private Long timestamp;
+    @Enumerated(EnumType.ORDINAL)
+    private Status status;
+    @Enumerated(EnumType.ORDINAL)
+    private Type type;
     @Column(nullable = false)
-    private Long lastEditTimestamp;
+    private Integer target;
     
-    public CommentResp toResp() {
-        return CommentResp.builder()
+    public NotificationResp toResp() {
+        return NotificationResp.builder()
                 .id(this.id)
-                .poster(this.poster.toResp())
+                .user(this.user.toResp())
                 .text(this.text)
-                .postTimestamp(this.postTimestamp)
-                .lastEditTimestamp(this.lastEditTimestamp)
+                .timestamp(this.timestamp)
+                .status(this.status)
+                .type(this.type)
+                .target(this.target)
                 .build();
+    }
+    
+    public enum Status {
+        UNSEEN, SEEN, CLICKED
+    }
+    
+    public enum Type {
+        PROJECT, TASK, COMMENT
     }
 }

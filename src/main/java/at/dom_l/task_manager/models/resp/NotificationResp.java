@@ -21,8 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models;
+package at.dom_l.task_manager.models.resp;
 
-public enum ProjectStatus {
-    ACTIVE, ARCHIVED
+import at.dom_l.task_manager.models.db.Notification;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class NotificationResp {
+    
+    private Integer id;
+    private UserResp user;
+    private String text;
+    private Long timestamp;
+    private Notification.Status status;
+    private Notification.Type type;
+    private Integer target;
 }

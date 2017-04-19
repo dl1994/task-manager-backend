@@ -23,8 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.models.db;
 
-import at.dom_l.task_manager.models.UserRole;
-import at.dom_l.task_manager.models.dto.UserDto;
+import at.dom_l.task_manager.models.resp.UserResp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +37,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -46,7 +46,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-@Table
+@Table(indexes = @Index(columnList = "username"))
 @Entity
 @Builder
 @NoArgsConstructor
@@ -54,8 +54,8 @@ import java.util.List;
 public class User implements UserDetails {
 
     private static final int MAX_NAME_LENGTH = 30;
-    private static final long serialVersionUID = 329460067141314050L;
-
+    private static final long serialVersionUID = 7717753194949904456L;
+    
     @Id
     @GeneratedValue
     private Integer id;
@@ -68,7 +68,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.ORDINAL)
-    private UserRole role;
+    private Role role;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
     private List<Task> ownedTasks;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
@@ -79,9 +79,11 @@ public class User implements UserDetails {
     private List<Project> assignedProjects;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "poster")
     private List<Comment> comments;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Notification> notifications;
 
-    public UserDto toDto() {
-        return UserDto.builder()
+    public UserResp toResp() {
+        return UserResp.builder()
                 .id(this.id)
                 .username(this.username)
                 .firstName(this.firstName)
@@ -113,5 +115,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    
+    public enum Role {
+        
+        ROLE_ADMIN, ROLE_USER;
+        
+        public GrantedAuthority toAuthority() {
+            return this::name;
+        }
     }
 }

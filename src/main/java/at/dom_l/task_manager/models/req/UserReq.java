@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.dto;
+package at.dom_l.task_manager.models.req;
 
-import at.dom_l.task_manager.models.ProjectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,11 +32,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectDto {
+public class UserReq {
 
-    private Integer id;
-    private String name;
-    private String description;
-    private UserDto owner;
-    private ProjectStatus status;
+    private String firstName;
+    private String lastName;
 }

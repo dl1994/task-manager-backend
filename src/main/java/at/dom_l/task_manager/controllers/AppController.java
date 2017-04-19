@@ -29,7 +29,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class AppController {
-
+    
     @RequestMapping(value = "/status", method = GET)
     public void status() {}
 }

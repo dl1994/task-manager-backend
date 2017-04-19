@@ -32,17 +32,22 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
 public class DataConfig {
-
+    
+    private final DataSource dataSource;
+    private static final String MODELS_PACKAGE = "at.dom_l.task_manager.models.db";
+    
     @Autowired
-    private DataSource dataSource;
-
+    public DataConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     @Bean
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
@@ -50,21 +55,30 @@ public class DataConfig {
         transactionManager.setSessionFactory(sessionFactory);
         return transactionManager;
     }
-
+    
     @Bean
     @Autowired
     public HibernateTemplate hibernateTemplate(SessionFactory sessionFactory) {
         return new HibernateTemplate(sessionFactory);
     }
-
+    
+    private static Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "create");
+        properties.setProperty("hibernate.globally_quoted_identifiers", "true");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        return properties;
+    }
+    
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setPackagesToScan(User.class.getPackage().getName());
+        sessionFactory.setPackagesToScan(MODELS_PACKAGE);
         sessionFactory.setDataSource(this.dataSource);
+        sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
-
+    
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()

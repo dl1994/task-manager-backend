@@ -32,6 +32,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -39,33 +40,37 @@ import java.io.IOException;
 @Component
 public class AuthenticationHandlers implements AuthenticationSuccessHandler,
         AuthenticationFailureHandler, LogoutSuccessHandler {
-
+    
+    private final ObjectMapper objectMapper;
+    
     @Autowired
-    private ObjectMapper objectMapper;
-
+    public AuthenticationHandlers(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+    
     @Override
-    //@Transactional // TODO: 10.01.17.
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         User principal = (User) authentication.getPrincipal();
-        String userJson = this.objectMapper.writeValueAsString(principal.toDto());
-
+        String userJson = this.objectMapper.writeValueAsString(principal.toResp());
+        
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().print(userJson);
         // TODO: 10.01.17. LOG?
         // TODO: 10.01.17. CONTENT TYPE?
     }
-
+    
     @Override
-    //@Transactional
+    @Transactional
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) {
         response.setStatus(HttpServletResponse.SC_OK);
         // TODO: 10.01.17. LOG?
     }
-
+    
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,

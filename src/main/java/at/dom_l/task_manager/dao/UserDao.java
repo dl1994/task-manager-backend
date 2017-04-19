@@ -21,21 +21,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.dto;
+package at.dom_l.task_manager.dao;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import at.dom_l.task_manager.models.db.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CommentDto {
-
-    private Integer id;
-    private UserDto poster;
-    private String text;
-    private Long postTimestamp;
+@Repository
+public class UserDao {
+    
+    private final SessionFactory sessionFactory;
+    
+    @Autowired
+    public UserDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+    
+    private Session currentSession() {
+        return this.sessionFactory.getCurrentSession();
+    }
+    
+    private <T> Query<T> createQuery(Class<T> resultType, String query) {
+        return this.currentSession()
+                .createQuery(query, resultType);
+    }
+    
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByUsername(String username) {
+        return this.createQuery(User.class, "from User where username=:username")
+                .setParameter("username", username)
+                .uniqueResultOptional();
+    }
+    
+    @Transactional
+    public Optional<User> getUserById(Integer id) {
+        return this.currentSession()
+                .byId(User.class)
+                .loadOptional(id);
+    }
+    
+    @Transactional
+    public Integer create(User user) {
+        return (Integer) this.currentSession()
+                .save(user);
+    }
+    
+    @Transactional
+    public void update(User user) {
+        this.currentSession()
+                .update(user);
+    }
+    
+    @Transactional
+    public void delete(User user) {
+        this.currentSession()
+                .delete(user);
+    }
 }
