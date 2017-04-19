@@ -45,21 +45,23 @@ import javax.servlet.http.HttpServletResponse;
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationHandlers authenticationHandlers;
     
     @Autowired
-    public SecurityConfig(AuthenticationHandlers authenticationHandlers) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, AuthenticationHandlers authenticationHandlers) {
+        this.passwordEncoder = passwordEncoder;
         this.authenticationHandlers = authenticationHandlers;
+    }
+    
+    @Bean
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
     
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth, UserService userService) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(this.passwordEncoder());
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        auth.userDetailsService(userService).passwordEncoder(this.passwordEncoder);
     }
     
     @Override

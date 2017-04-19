@@ -23,6 +23,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.controllers;
 
+import at.dom_l.task_manager.models.db.User;
+import at.dom_l.task_manager.models.req.NewUserReq;
+import at.dom_l.task_manager.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -30,6 +34,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class AppController {
     
+    @Autowired
+    private UserService userService;
+    
     @RequestMapping(value = "/status", method = GET)
-    public void status() {}
+    public void status() {
+        this.userService.createUser(NewUserReq.builder()
+                .firstName("admin")
+                .lastName("admin")
+                .username("admin")
+                .password("pass")
+                .role(User.Role.ROLE_ADMIN)
+                .build());
+    }
 }

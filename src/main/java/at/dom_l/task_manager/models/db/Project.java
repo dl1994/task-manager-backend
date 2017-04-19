@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -36,12 +35,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
 
 @Data
 @Table
@@ -66,15 +61,15 @@ public class Project {
     private User owner;
     @Enumerated(EnumType.ORDINAL)
     private Status status;
-    @ManyToMany
-    @JoinTable(
-            name = "ProjectParticipants",
-            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "projectId", referencedColumnName = "id")
-    )
-    private List<User> involvedUsers;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-    private List<Task> tasks;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "ProjectParticipants",
+//            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "id"),
+//            inverseJoinColumns = @JoinColumn(name = "projectId", referencedColumnName = "id")
+//    )
+//    private List<User> involvedUsers;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+//    private List<Task> tasks;
 
     public ProjectResp toResp() {
         return ProjectResp.builder()

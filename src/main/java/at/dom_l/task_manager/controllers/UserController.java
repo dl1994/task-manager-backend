@@ -65,7 +65,7 @@ public class UserController {
     }
     
     @RequestMapping(value = "/{userId}", method = GET)
-    public UserResp getUser(@PathVariable Integer userId) {
+    public UserResp getUser(@AuthenticationPrincipal User user,@PathVariable Integer userId) {
         return this.getUserById(userId);
     }
     

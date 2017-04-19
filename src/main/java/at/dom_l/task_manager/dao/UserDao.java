@@ -29,7 +29,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
@@ -51,33 +50,28 @@ public class UserDao {
                 .createQuery(query, resultType);
     }
     
-    @Transactional(readOnly = true)
     public Optional<User> getUserByUsername(String username) {
         return this.createQuery(User.class, "from User where username=:username")
                 .setParameter("username", username)
                 .uniqueResultOptional();
     }
     
-    @Transactional
     public Optional<User> getUserById(Integer id) {
         return this.currentSession()
                 .byId(User.class)
                 .loadOptional(id);
     }
     
-    @Transactional
     public Integer create(User user) {
         return (Integer) this.currentSession()
                 .save(user);
     }
     
-    @Transactional
     public void update(User user) {
         this.currentSession()
                 .update(user);
     }
     
-    @Transactional
     public void delete(User user) {
         this.currentSession()
                 .delete(user);

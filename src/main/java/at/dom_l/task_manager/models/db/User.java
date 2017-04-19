@@ -30,7 +30,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,12 +37,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Data
 @Table(indexes = @Index(columnList = "username"))
@@ -69,18 +65,18 @@ public class User implements UserDetails {
     private String password;
     @Enumerated(EnumType.ORDINAL)
     private Role role;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-    private List<Task> ownedTasks;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
-    private List<Task> assignedTasks;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-    private List<Project> ownedProjects;
-    @ManyToMany(mappedBy = "involvedUsers")
-    private List<Project> assignedProjects;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poster")
-    private List<Comment> comments;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Notification> notifications;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+//    private List<Task> ownedTasks;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assignee")
+//    private List<Task> assignedTasks;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+//    private List<Project> ownedProjects;
+//    @ManyToMany(mappedBy = "involvedUsers")
+//    private List<Project> assignedProjects;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "poster")
+//    private List<Comment> comments;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+//    private List<Notification> notifications;
 
     public UserResp toResp() {
         return UserResp.builder()

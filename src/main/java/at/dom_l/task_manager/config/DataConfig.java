@@ -40,13 +40,7 @@ import java.util.Properties;
 @EnableTransactionManagement(proxyTargetClass = true)
 public class DataConfig {
     
-    private final DataSource dataSource;
     private static final String MODELS_PACKAGE = "at.dom_l.task_manager.models.db";
-    
-    @Autowired
-    public DataConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
     
     @Bean
     @Autowired
@@ -71,10 +65,11 @@ public class DataConfig {
     }
     
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    @Autowired
+    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setPackagesToScan(MODELS_PACKAGE);
-        sessionFactory.setDataSource(this.dataSource);
+        sessionFactory.setDataSource(dataSource);
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

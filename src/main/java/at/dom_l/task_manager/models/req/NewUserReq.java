@@ -26,24 +26,18 @@ package at.dom_l.task_manager.models.req;
 import at.dom_l.task_manager.models.db.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
+@Data
 @Builder
-@ToString
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
-public class NewUserReq extends UserReq {
+public class NewUserReq {
     
     private String username;
+    private String firstName;
+    private String lastName;
     private String password;
     private User.Role role;
 }

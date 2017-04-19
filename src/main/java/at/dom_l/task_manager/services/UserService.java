@@ -26,10 +26,6 @@ package at.dom_l.task_manager.services;
 import at.dom_l.task_manager.dao.UserDao;
 import at.dom_l.task_manager.exceptions.PasswordException;
 import at.dom_l.task_manager.exceptions.UserNotFoundException;
-import at.dom_l.task_manager.models.db.Comment;
-import at.dom_l.task_manager.models.db.Notification;
-import at.dom_l.task_manager.models.db.Project;
-import at.dom_l.task_manager.models.db.Task;
 import at.dom_l.task_manager.models.db.User;
 import at.dom_l.task_manager.models.req.NewUserReq;
 import at.dom_l.task_manager.models.req.UserReq;
@@ -40,10 +36,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -62,7 +56,7 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.userDao.getUserByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("no user with username " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("no user with username: " + username));
     }
     
     @Transactional(readOnly = true)
@@ -93,6 +87,7 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public void deleteUser(Integer userId) {
+        // TODO un-own all tasks, delete comments, etc.
         this.userDao.delete(this.getUserById(userId));
     }
     
@@ -132,37 +127,37 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException("no user with id " + userId));
     }
     
-    @Transactional(readOnly = true)
-    public List<Task> getOwnedTasks(Integer userId) {
-        return this.getList(userId, User::getOwnedTasks);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Task> getAssignedTasks(Integer userId) {
-        return this.getList(userId, User::getAssignedTasks);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Project> getOwnedProjects(Integer userId) {
-        return this.getList(userId, User::getOwnedProjects);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Project> getAssignedProjects(Integer userId) {
-        return this.getList(userId, User::getAssignedProjects);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Comment> getComments(Integer userId) {
-        return this.getList(userId, User::getComments);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Notification> getNotifications(Integer userId) {
-        return this.getList(userId, User::getNotifications);
-    }
-    
-    private <T> List<T> getList(Integer userId, Function<User, List<T>> listGetter) {
-        return listGetter.apply(this.getUserById(userId));
-    }
+//    @Transactional(readOnly = true)
+//    public List<Task> getOwnedTasks(Integer userId) {
+//        return this.getList(userId, User::getOwnedTasks);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Task> getAssignedTasks(Integer userId) {
+//        return this.getList(userId, User::getAssignedTasks);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Project> getOwnedProjects(Integer userId) {
+//        return this.getList(userId, User::getOwnedProjects);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Project> getAssignedProjects(Integer userId) {
+//        return this.getList(userId, User::getAssignedProjects);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Comment> getComments(Integer userId) {
+//        return this.getList(userId, User::getComments);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Notification> getNotifications(Integer userId) {
+//        return this.getList(userId, User::getNotifications);
+//    }
+//
+//    private <T> List<T> getList(Integer userId, Function<User, List<T>> listGetter) {
+//        return listGetter.apply(this.getUserById(userId));
+//    }
 }
