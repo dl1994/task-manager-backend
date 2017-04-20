@@ -74,15 +74,15 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public Integer createUser(NewUserReq newUserReq) {
-        User user = new User();
-        
-        user.setUsername(newUserReq.getUsername());
-        user.setFirstName(newUserReq.getFirstName());
-        user.setLastName(newUserReq.getLastName());
-        user.setRole(newUserReq.getRole());
-        user.setPassword(this.encoded(newUserReq.getPassword()));
-        
-        return this.userDao.create(user);
+        return this.userDao.create(
+                User.builder()
+                        .username(newUserReq.getUsername())
+                        .firstName(newUserReq.getFirstName())
+                        .lastName(newUserReq.getLastName())
+                        .role(newUserReq.getRole())
+                        .password(this.encoded(newUserReq.getPassword()))
+                        .build()
+        );
     }
     
     @Transactional
@@ -126,28 +126,4 @@ public class UserService implements UserDetailsService {
         return this.userDao.getByPrimaryKey(userId)
                 .orElseThrow(() -> new UserNotFoundException("no user with id: " + userId));
     }
-
-//    @Transactional(readOnly = true)
-//    public List<Task> getAssignedTasks(Integer userId) {
-//        return this.getList(userId, User::getAssignedTasks);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<Project> getOwnedProjects(Integer userId) {
-//        return this.getList(userId, User::getOwnedProjects);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<Project> getAssignedProjects(Integer userId) {
-//        return this.getList(userId, User::getAssignedProjects);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<Comment> getComments(Integer userId) {
-//        return this.getList(userId, User::getComments);
-//    }
-//
-//    private <T> List<T> getList(Integer userId, Function<User, List<T>> listGetter) {
-//        return listGetter.apply(this.getByPrimaryKey(userId));
-//    }
 }

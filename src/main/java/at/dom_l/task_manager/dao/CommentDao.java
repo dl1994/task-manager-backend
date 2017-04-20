@@ -21,49 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE   *
  * SOFTWARE.                                                                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-package at.dom_l.task_manager.models.db;
+package at.dom_l.task_manager.dao;
 
-import at.dom_l.task_manager.models.resp.CommentResp;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import at.dom_l.task_manager.models.db.Comment;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Data
-@Table
-@Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Comment {
+@Repository
+public class CommentDao extends AbstractDao<Comment, Integer> {
     
-    private static final int MAX_COMMENT_LENGTH = 1_000;
+    @Autowired
+    public CommentDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
     
-    @Id
-    @GeneratedValue
-    private Integer id;
-    @Column(nullable = false)
-    private Integer taskId; // TODO: add constraint
-    @Column(nullable = false)
-    private Integer posterId; // TODO: add constraint
-    @Column(nullable = false, length = MAX_COMMENT_LENGTH)
-    private String text;
-    @Column(nullable = false)
-    private Long postTimestamp;
-    private Long lastEditTimestamp;
+    @Override
+    protected Class<Comment> getModelClass() {
+        return Comment.class;
+    }
     
-    public CommentResp toResp() {
-        return CommentResp.builder()
-                .id(this.id)
-                .posterId(this.posterId)
-                .text(this.text)
-                .postTimestamp(this.postTimestamp)
-                .lastEditTimestamp(this.lastEditTimestamp)
-                .build();
+    public List<Comment> getComments(Integer taskId) {
+        return this.createQuery("from Comment where taskId=:taskId")
+                .setParameter("taskId", taskId)
+                .getResultList(); // TODO: add pagination
     }
 }

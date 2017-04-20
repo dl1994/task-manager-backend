@@ -23,79 +23,63 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 package at.dom_l.task_manager.services;
 
-import at.dom_l.task_manager.dao.NotificationDao;
-import at.dom_l.task_manager.models.db.Notification;
+import at.dom_l.task_manager.dao.CommentDao;
+import at.dom_l.task_manager.models.db.Comment;
 import at.dom_l.task_manager.models.db.User;
-import at.dom_l.task_manager.models.req.NotificationReq;
+import at.dom_l.task_manager.models.req.CommentReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
-public class NotificationService {
+public class CommentService {
     
-    private final NotificationDao notificationDao;
+    private final CommentDao commentDao;
     
     @Autowired
-    public NotificationService(NotificationDao notificationDao) {
-        this.notificationDao = notificationDao;
+    public CommentService(CommentDao commentDao) {
+        this.commentDao = commentDao;
     }
     
     @Transactional(readOnly = true)
-    public boolean isOwner(Integer notificationId, User user) {
-        return this.notificationDao.getByPrimaryKey(notificationId)
-                .map(Notification::getUserId)
-                .map(uId -> Objects.equals(uId, user.getId()))
-                .orElse(false);
-    }
-    
-    private List<Notification> getNotifications(User user) {
-        return this.notificationDao.getNotifications(user.getId());
+    public List<Comment> getCommentsForTask(Integer taskId) {
+        return this.commentDao.getComments(taskId);
     }
     
     @Transactional(readOnly = true)
-    public List<Notification> getNotificationsForUser(User user) {
-        return this.getNotifications(user);
-    }
-    
-    @Transactional(readOnly = true)
-    public Integer getUnseenNotificationsCountForUser(User user) {
-        return (int) this.getNotifications(user)
-                .stream()
-                .filter(n -> n.getStatus() == Notification.Status.UNSEEN)
-                .count();
-    }
-    
-    private Notification getNotification(Integer notificationId) {
-        return this.notificationDao.getByPrimaryKey(notificationId)
-                .orElseThrow(null); // TODO: add exception for this
+    public Optional<Comment> getComment(Integer commentId) {
+        return this.commentDao.getByPrimaryKey(commentId);
     }
     
     @Transactional
-    public Integer createNotification(NotificationReq notificationReq) {
-        return this.notificationDao.create(
-                Notification.builder()
-                        .text(notificationReq.getText())
-                        .type(notificationReq.getType())
-                        .userId(notificationReq.getUserId())
-                        .target(notificationReq.getTarget())
-                        .status(Notification.Status.UNSEEN)
-                        .timestamp(System.currentTimeMillis())
+    public Integer createComment(Integer taskId, User poster, CommentReq commentReq) {
+        return this.commentDao.create(
+                Comment.builder()
+                        .taskId(taskId)
+                        .posterId(poster.getId())
+                        .text(commentReq.getText())
+                        .postTimestamp(System.currentTimeMillis())
                         .build()
         );
     }
     
-    @Transactional
-    public void changeStatus(Integer notificationId, Notification.Status status) {
-        Notification notification = this.getNotification(notificationId);
-        notification.setStatus(status);
-        this.notificationDao.update(notification);
+    private Comment getCommentById(Integer commentId) {
+        return this.commentDao.getByPrimaryKey(commentId)
+                .orElseThrow(null); // TODO: add exception
     }
     
     @Transactional
-    public void deleteNotification(Integer notificationId) {
-        this.notificationDao.delete(this.getNotification(notificationId));
+    public void updateComment(Integer commentId, CommentReq commentReq) {
+        Comment comment = this.getCommentById(commentId);
+        comment.setText(comment.getText());
+        comment.setLastEditTimestamp(System.currentTimeMillis());
+        this.commentDao.update(comment);
+    }
+    
+    @Transactional
+    public void deleteComment(Integer commentId) {
+        this.commentDao.delete(this.getCommentById(commentId)); // TODO: delete all notifications
     }
 }

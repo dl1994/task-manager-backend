@@ -145,6 +145,4 @@ public class UserController {
             throw new AccessDeniedException();
         }
     }
-    
-    // TODO add getters for projects, tasks, ...
 }
