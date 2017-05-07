@@ -11,10 +11,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
-@Table
+@Table(indexes = {
+        @Index(columnList = "userId"),
+        @Index(columnList = "target"),
+        @Index(columnList = "timestamp"),
+})
 @Entity
 @Builder
 @NoArgsConstructor
@@ -37,7 +42,7 @@ public class Notification {
     @Enumerated(EnumType.ORDINAL)
     private Type type;
     @Column(nullable = false)
-    private Integer target;
+    private Integer target; // TODO add constraint
     
     public enum Status {
         UNSEEN, SEEN, CLICKED

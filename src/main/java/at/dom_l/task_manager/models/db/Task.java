@@ -11,10 +11,16 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
-@Table
+@Table(indexes = {
+        @Index(columnList = "assigneeId,projectId"),
+        @Index(columnList = "projectId"),
+        @Index(columnList = "createdTimestamp")
+        // TODO figure out if any more indexes are needed
+})
 @Entity
 @Builder
 @NoArgsConstructor

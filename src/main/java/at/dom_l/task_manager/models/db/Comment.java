@@ -9,10 +9,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
-@Table
+@Table(indexes = {
+        @Index(columnList = "taskId"),
+        @Index(columnList = "posterId"),
+        @Index(columnList = "postTimestamp")
+})
 @Entity
 @Builder
 @NoArgsConstructor

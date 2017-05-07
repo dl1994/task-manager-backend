@@ -19,13 +19,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
-@Table(indexes = @Index(columnList = "username"))
+@Table(indexes = {
+        @Index(columnList = "role"),
+        @Index(columnList = "username")
+})
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
-
+    
     private static final int MAX_NAME_LENGTH = 30;
     private static final int MAX_HASHED_PASSWORD_LENGTH = 80;
     private static final long serialVersionUID = -3486687607400525759L;
@@ -43,27 +46,27 @@ public class User implements UserDetails {
     private String password;
     @Enumerated(EnumType.ORDINAL)
     private Role role;
-
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(this.role.toAuthority());
     }
-
+    
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
-
+    
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
+    
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
+    
     @Override
     public boolean isEnabled() {
         return true;

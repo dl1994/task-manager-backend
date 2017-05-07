@@ -11,10 +11,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Data
-@Table
+@Table(indexes = {
+        @Index(columnList = "ownerId"),
+        @Index(columnList = "ownerId,status")
+})
 @Entity
 @Builder
 @NoArgsConstructor
