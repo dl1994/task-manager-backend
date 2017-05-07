@@ -1,5 +1,6 @@
 package at.dom_l.task_manager.exceptions;
 
+// TODO write handler for this exception
 public class AccessDeniedException extends RuntimeException {
     
     private static final long serialVersionUID = 2983081521422048015L;

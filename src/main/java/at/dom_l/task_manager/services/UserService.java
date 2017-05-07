@@ -7,12 +7,15 @@ import at.dom_l.task_manager.models.db.User;
 import at.dom_l.task_manager.models.req.NewUserReq;
 import at.dom_l.task_manager.models.req.UserReq;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -21,11 +24,13 @@ public class UserService implements UserDetailsService {
     
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private final SessionRegistry sessionRegistry;
     private static final int MIN_PASSWORD_LENGTH = 4;
     
     @Autowired
-    public UserService(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserService(UserDao userDao, PasswordEncoder passwordEncoder, SessionRegistry sessionRegistry) {
         this.userDao = userDao;
+        this.sessionRegistry = sessionRegistry;
         this.passwordEncoder = passwordEncoder;
     }
     
@@ -101,6 +106,16 @@ public class UserService implements UserDetailsService {
     
     private User getUserById(Integer userId) {
         return this.userDao.getByPrimaryKey(userId)
-                .orElseThrow(() -> new UserNotFoundException("no user with id: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(userId));
+    }
+    
+    public void expireSessions(Integer userId) {
+        this.sessionRegistry.getAllPrincipals()
+                .stream()
+                .map(User.class::cast)
+                .filter(principal -> Objects.equals(principal.getId(), userId))
+                .findFirst()
+                .map(principal -> this.sessionRegistry.getAllSessions(principal, false))
+                .ifPresent(sessions -> sessions.forEach(SessionInformation::expireNow));
     }
 }

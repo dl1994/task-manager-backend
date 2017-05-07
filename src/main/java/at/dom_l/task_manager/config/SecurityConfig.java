@@ -11,10 +11,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import javax.servlet.http.HttpServletResponse;
 
 @Configuration
@@ -23,17 +26,25 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     private final PasswordEncoder passwordEncoder;
+    private final SessionRegistry sessionRegistry;
     private final AuthenticationHandlers authenticationHandlers;
     
     @Autowired
-    public SecurityConfig(PasswordEncoder passwordEncoder, AuthenticationHandlers authenticationHandlers) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, SessionRegistry sessionRegistry,
+                          AuthenticationHandlers authenticationHandlers) {
         this.passwordEncoder = passwordEncoder;
+        this.sessionRegistry = sessionRegistry;
         this.authenticationHandlers = authenticationHandlers;
     }
     
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public static SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
     
     @Autowired
@@ -44,7 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.sessionManagement().maximumSessions(1);
+        http.sessionManagement()
+                .maximumSessions(1)
+                .expiredSessionStrategy(SecurityConfig::expiredSessionHandler)
+                .sessionRegistry(this.sessionRegistry);
         http.formLogin()
                 .loginProcessingUrl("/login")
                 .successHandler(this.authenticationHandlers)
@@ -64,5 +78,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     private static AccessDeniedHandler accessDeniedHandler() {
         return (request, response, exception) -> response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    }
+    
+    private static void expiredSessionHandler(SessionInformationExpiredEvent event) {
+        event.getResponse().setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

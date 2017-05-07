@@ -1,8 +1,10 @@
 package at.dom_l.task_manager.services;
 
 import at.dom_l.task_manager.dao.CommentDao;
+import at.dom_l.task_manager.exceptions.CommentNotFoundException;
 import at.dom_l.task_manager.models.db.Comment;
 import at.dom_l.task_manager.models.db.User;
+import at.dom_l.task_manager.models.param.PaginationQueryParams;
 import at.dom_l.task_manager.models.req.CommentReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,8 @@ public class CommentService {
     }
     
     @Transactional(readOnly = true)
-    public List<Comment> getCommentsForTask(Integer taskId) {
-        return this.commentDao.getComments(taskId);
+    public List<Comment> getCommentsForTask(Integer taskId, PaginationQueryParams pagination) {
+        return this.commentDao.getComments(taskId, pagination);
     }
     
     @Transactional(readOnly = true)
@@ -44,7 +46,7 @@ public class CommentService {
     
     private Comment getCommentById(Integer commentId) {
         return this.commentDao.getByPrimaryKey(commentId)
-                .orElseThrow(null); // TODO: add exception
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
     
     @Transactional

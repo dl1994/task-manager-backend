@@ -1,6 +1,7 @@
 package at.dom_l.task_manager.services;
 
 import at.dom_l.task_manager.dao.NotificationDao;
+import at.dom_l.task_manager.exceptions.NotificationNotFoundException;
 import at.dom_l.task_manager.models.db.Notification;
 import at.dom_l.task_manager.models.db.User;
 import at.dom_l.task_manager.models.param.PaginationQueryParams;
@@ -45,7 +46,7 @@ public class NotificationService {
     
     private Notification getNotification(Integer notificationId) {
         return this.notificationDao.getByPrimaryKey(notificationId)
-                .orElseThrow(null); // TODO: add exception for this
+                .orElseThrow(() -> new NotificationNotFoundException(notificationId));
     }
     
     @Transactional

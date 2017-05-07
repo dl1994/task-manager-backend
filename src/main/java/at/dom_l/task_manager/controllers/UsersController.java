@@ -35,20 +35,21 @@ public class UsersController {
     
     @RequestMapping(value = "/me", method = GET)
     public UserResp getMe(@AuthenticationPrincipal User user) {
-        return this.userService.loadUserById(user.getId())
-                .orElse(user)
-                .toResp();
+        return this.getUserById(user.getId());
     }
     
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/{userId}", method = GET)
     public UserResp getUser(@PathVariable Integer userId) {
         return this.getUserById(userId);
     }
     
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/{userId}", method = DELETE)
     public void deleteUser(@PathVariable Integer userId,
                            @AuthenticationPrincipal User user) {
         if (notSelf(userId, user)) {
+            this.userService.expireSessions(userId);
             this.userService.deleteUser(userId);
         } else {
             throw new AccessDeniedException();
@@ -83,7 +84,7 @@ public class UsersController {
     private UserResp getUserById(Integer userId) {
         return this.userService.loadUserById(userId)
                 .map(User::toResp)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
     
     @RequestMapping(value = "/me/change-password", method = POST)
@@ -106,6 +107,7 @@ public class UsersController {
                                @RequestBody PasswordReq passwordReq,
                                @AuthenticationPrincipal User user) {
         if (notSelf(userId, user)) {
+            this.userService.expireSessions(userId);
             this.userService.changePassword(userId, passwordReq.getNewPassword());
         } else {
             throw new AccessDeniedException();
@@ -118,8 +120,20 @@ public class UsersController {
                                @RequestBody RoleReq roleReq,
                                @AuthenticationPrincipal User user) {
         if (notSelf(userId, user)) {
+            this.userService.expireSessions(userId);
             this.userService.changeRole(userId, roleReq.getRole());
             return this.getUserById(userId);
+        } else {
+            throw new AccessDeniedException();
+        }
+    }
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/{userId}/expire-sessions", method = GET)
+    public void expireSessions(@PathVariable Integer userId,
+                               @AuthenticationPrincipal User user) {
+        if (notSelf(userId, user)) {
+            this.userService.expireSessions(userId);
         } else {
             throw new AccessDeniedException();
         }

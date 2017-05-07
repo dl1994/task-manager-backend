@@ -32,7 +32,7 @@ public class AppController {
                          RequestMappingHandlerMapping handlerMapping) {
         Integer userId = userService.createUser(NewUserReq.builder()
                 .firstName("Test")
-                .lastName("User")
+                .lastName("Admin")
                 .username("admin")
                 .password("pass")
                 .role(User.Role.ROLE_ADMIN)
@@ -51,6 +51,13 @@ public class AppController {
                 .target(0)
                 .build()
         );
+        userService.createUser(NewUserReq.builder()
+                .firstName("Test")
+                .lastName("User")
+                .username("user")
+                .password("pass")
+                .role(User.Role.ROLE_USER)
+                .build());
         this.handlerMapping = handlerMapping;
     }
     

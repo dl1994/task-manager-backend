@@ -31,8 +31,8 @@ public class NotificationsController {
     }
     
     @RequestMapping(method = GET)
-    public List<NotificationResp> getNotifications(@AuthenticationPrincipal User user,
-                                                   @ModelAttribute PaginationQueryParams pagination) {
+    public List<NotificationResp> getNotifications(@ModelAttribute PaginationQueryParams pagination,
+                                                   @AuthenticationPrincipal User user) {
         return this.notificationService.getNotificationsForUser(user, pagination)
                 .stream()
                 .map(Notification::toResp)
@@ -57,21 +57,20 @@ public class NotificationsController {
     }
     
     @RequestMapping(value = "/mark-seen/{notificationId}", method = POST)
-    public void markAsSeen(@AuthenticationPrincipal User user,
-                           @PathVariable Integer notificationId) {
-        // TODO make this bulk-update
+    public void markAsSeen(@PathVariable Integer notificationId,
+                           @AuthenticationPrincipal User user) {
         this.setStatusIfOwned(user, notificationId, Notification.Status.SEEN);
     }
     
     @RequestMapping(value = "/mark-clicked/{notificationId}", method = POST)
-    public void markAsClicked(@AuthenticationPrincipal User user,
-                              @PathVariable Integer notificationId) {
+    public void markAsClicked(@PathVariable Integer notificationId,
+                              @AuthenticationPrincipal User user) {
         this.setStatusIfOwned(user, notificationId, Notification.Status.CLICKED);
     }
     
     @RequestMapping(value = "/{notificationId}", method = DELETE)
-    public void deleteNotification(@AuthenticationPrincipal User user,
-                                   @PathVariable Integer notificationId) {
+    public void deleteNotification(@PathVariable Integer notificationId,
+                                   @AuthenticationPrincipal User user) {
         this.doIfOwned(user, notificationId, this.notificationService::deleteNotification);
     }
 }
