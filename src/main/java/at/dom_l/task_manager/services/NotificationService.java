@@ -3,6 +3,7 @@ package at.dom_l.task_manager.services;
 import at.dom_l.task_manager.dao.NotificationDao;
 import at.dom_l.task_manager.models.db.Notification;
 import at.dom_l.task_manager.models.db.User;
+import at.dom_l.task_manager.models.param.PaginationQueryParams;
 import at.dom_l.task_manager.models.req.NotificationReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,21 +29,18 @@ public class NotificationService {
                 .orElse(false);
     }
     
-    private List<Notification> getNotifications(User user) {
-        return this.notificationDao.getNotifications(user.getId());
+    private List<Notification> getNotifications(User user, PaginationQueryParams pagination) {
+        return this.notificationDao.getNotifications(user.getId(), pagination);
     }
     
     @Transactional(readOnly = true)
-    public List<Notification> getNotificationsForUser(User user) {
-        return this.getNotifications(user);
+    public List<Notification> getNotificationsForUser(User user, PaginationQueryParams pagination) {
+        return this.getNotifications(user, pagination);
     }
     
     @Transactional(readOnly = true)
     public Integer getUnseenNotificationsCountForUser(User user) {
-        return (int) this.getNotifications(user)
-                .stream()
-                .filter(n -> n.getStatus() == Notification.Status.UNSEEN)
-                .count();
+        return this.notificationDao.getUnseenCount(user.getId());
     }
     
     private Notification getNotification(Integer notificationId) {

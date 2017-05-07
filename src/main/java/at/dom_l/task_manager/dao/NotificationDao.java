@@ -1,6 +1,7 @@
 package at.dom_l.task_manager.dao;
 
 import at.dom_l.task_manager.models.db.Notification;
+import at.dom_l.task_manager.models.param.PaginationQueryParams;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -19,9 +20,19 @@ public class NotificationDao extends AbstractDao<Notification, Integer> {
         return Notification.class;
     }
     
-    public List<Notification> getNotifications(Integer userId) {
-        return this.createQuery("from Notification where userId=:userId")
+    public List<Notification> getNotifications(Integer userId, PaginationQueryParams pagination) {
+        return this.createQuery("from Notification where userId=:userId order by timestamp desc")
                 .setParameter("userId", userId)
-                .getResultList(); // TODO: add pagination, sort by timestamp
+                .setFirstResult(pagination.getPage() * pagination.getItemsPerPage())
+                .setMaxResults(pagination.getItemsPerPage())
+                .getResultList();
+    }
+    
+    public Integer getUnseenCount(Integer userId) {
+        return this.createCountQuery("from Notification where userId=:userId and status=:status")
+                .setParameter("userId", userId)
+                .setParameter("status", Notification.Status.UNSEEN)
+                .getSingleResult()
+                .intValue();
     }
 }

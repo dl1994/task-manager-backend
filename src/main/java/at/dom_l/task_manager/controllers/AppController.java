@@ -40,7 +40,14 @@ public class AppController {
         notificationService.createNotification(NotificationReq.builder()
                 .userId(userId)
                 .type(Notification.Type.COMMENT)
-                .text("test text")
+                .text("test text 1")
+                .target(0)
+                .build()
+        );
+        notificationService.createNotification(NotificationReq.builder()
+                .userId(userId)
+                .type(Notification.Type.COMMENT)
+                .text("test text 2")
                 .target(0)
                 .build()
         );

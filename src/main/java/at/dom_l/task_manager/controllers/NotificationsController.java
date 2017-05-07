@@ -3,10 +3,12 @@ package at.dom_l.task_manager.controllers;
 import at.dom_l.task_manager.exceptions.AccessDeniedException;
 import at.dom_l.task_manager.models.db.Notification;
 import at.dom_l.task_manager.models.db.User;
+import at.dom_l.task_manager.models.param.PaginationQueryParams;
 import at.dom_l.task_manager.models.resp.NotificationResp;
 import at.dom_l.task_manager.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,9 +30,10 @@ public class NotificationsController {
         this.notificationService = notificationService;
     }
     
-    @RequestMapping(value = "", method = GET)
-    public List<NotificationResp> getNotifications(@AuthenticationPrincipal User user) { // TODO: add pagination
-        return this.notificationService.getNotificationsForUser(user)
+    @RequestMapping(method = GET)
+    public List<NotificationResp> getNotifications(@AuthenticationPrincipal User user,
+                                                   @ModelAttribute PaginationQueryParams pagination) {
+        return this.notificationService.getNotificationsForUser(user, pagination)
                 .stream()
                 .map(Notification::toResp)
                 .collect(Collectors.toList());

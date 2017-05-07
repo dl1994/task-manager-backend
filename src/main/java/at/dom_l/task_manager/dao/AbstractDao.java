@@ -23,6 +23,12 @@ public abstract class AbstractDao<M, PK extends Serializable> {
                 .createQuery(query, this.getModelClass());
     }
     
+    @SuppressWarnings("unchecked")
+    protected Query<Long> createCountQuery(String query) {
+        return (Query<Long>) this.currentSession()
+                .createQuery("select count(*) " + query);
+    }
+    
     protected abstract Class<M> getModelClass();
     
     public Optional<M> getByPrimaryKey(PK primaryKey) {
