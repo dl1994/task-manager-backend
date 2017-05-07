@@ -42,12 +42,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/notifications")
-public class NotificationController {
+public class NotificationsController {
     
     private final NotificationService notificationService;
     
     @Autowired
-    public NotificationController(NotificationService notificationService) {
+    public NotificationsController(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
     
@@ -79,6 +79,7 @@ public class NotificationController {
     @RequestMapping(value = "/mark-seen/{notificationId}", method = POST)
     public void markAsSeen(@AuthenticationPrincipal User user,
                            @PathVariable Integer notificationId) {
+        // TODO make this bulk-update
         this.setStatusIfOwned(user, notificationId, Notification.Status.SEEN);
     }
     

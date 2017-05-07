@@ -47,22 +47,24 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UsersController {
     
     private final UserService userService;
     
     @Autowired
-    public UserController(UserService userService) {
+    public UsersController(UserService userService) {
         this.userService = userService;
     }
     
     @RequestMapping(value = "/me", method = GET)
     public UserResp getMe(@AuthenticationPrincipal User user) {
-        return user.toResp();
+        return this.userService.loadUserById(user.getId())
+                .orElse(user)
+                .toResp();
     }
     
     @RequestMapping(value = "/{userId}", method = GET)
-    public UserResp getUser(@AuthenticationPrincipal User user,@PathVariable Integer userId) {
+    public UserResp getUser(@PathVariable Integer userId) {
         return this.getUserById(userId);
     }
     

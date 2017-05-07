@@ -45,6 +45,6 @@ public class NotificationDao extends AbstractDao<Notification, Integer> {
     public List<Notification> getNotifications(Integer userId) {
         return this.createQuery("from Notification where userId=:userId")
                 .setParameter("userId", userId)
-                .getResultList(); // TODO: add pagination
+                .getResultList(); // TODO: add pagination, sort by timestamp
     }
 }

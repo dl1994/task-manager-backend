@@ -46,13 +46,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping("/comments")
-public class CommentController {
+public class CommentsController {
     
     private final CommentService commentService;
     private final NotificationService notificationService;
     
     @Autowired
-    public CommentController(CommentService commentService, NotificationService notificationService) {
+    public CommentsController(CommentService commentService, NotificationService notificationService) {
         this.commentService = commentService;
         this.notificationService = notificationService;
     }

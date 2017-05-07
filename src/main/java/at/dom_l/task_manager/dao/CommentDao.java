@@ -45,6 +45,6 @@ public class CommentDao extends AbstractDao<Comment, Integer> {
     public List<Comment> getComments(Integer taskId) {
         return this.createQuery("from Comment where taskId=:taskId")
                 .setParameter("taskId", taskId)
-                .getResultList(); // TODO: add pagination
+                .getResultList(); // TODO: add pagination, sort by timestamp
     }
 }

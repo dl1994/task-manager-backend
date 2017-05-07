@@ -78,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(this.authenticationHandlers)
                 .deleteCookies("JSESSIONID")
                 .permitAll();
-        http.authorizeRequests().antMatchers("/status", "/users/me")
+        http.authorizeRequests().antMatchers("/status", "/")
                 .permitAll().anyRequest().authenticated();
         http.httpBasic();
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
