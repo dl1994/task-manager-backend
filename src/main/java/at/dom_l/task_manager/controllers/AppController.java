@@ -1,6 +1,6 @@
 package at.dom_l.task_manager.controllers;
 
-import at.dom_l.task_manager.models.ControllerInfo;
+import at.dom_l.task_manager.util.ControllerInfo;
 import at.dom_l.task_manager.models.db.Notification;
 import at.dom_l.task_manager.models.db.User;
 import at.dom_l.task_manager.models.req.NewUserReq;
@@ -64,6 +64,76 @@ public class AppController {
     @RequestMapping(value = "/status", method = GET)
     public void status() {}
     
+    private static final String CSS = "body {\n" +
+            "    font-family: sans-serif;\n" +
+            "    margin: 0;\n" +
+            "    background: #DDDDDD;\n" +
+            "}\n\n" +
+            "h1 {\n" +
+            "    color: #444444;\n" +
+            "}\n\n" +
+            ".container {\n" +
+            "    position: relative;\n" +
+            "    left: 12.5%;\n" +
+            "    width: calc(75% - 40pt);\n" +
+            "    border: 1px solid gray;\n" +
+            "    padding: 20pt;\n" +
+            "    padding-top: 1px;\n" +
+            "    background: white;\n" +
+            "    margin-top: 25pt;\n" +
+            "    margin-bottom: 25pt;\n" +
+            "}\n\n" +
+            ".header {\n" +
+            "    width: 100%;\n" +
+            "    border: 1px solid gray;\n" +
+            "    border-radius: 3pt;\n" +
+            "    overflow: hidden;\n" +
+            "    background: #F0F0F0;\n" +
+            "}\n\n" +
+            ".header-field {\n" +
+            "    padding: 5pt;\n" +
+            "    display: inline-block;\n" +
+            "    font-weight: bold;\n" +
+            "}\n\n" +
+            ".method {\n" +
+            "    border-right: 1px solid gray;\n" +
+            "    background: linear-gradient(#EEEEEE,#999999);\n" +
+            "    border-radius: 3pt;\n" +
+            "    color: #505050;\n" +
+            "}\n\n" +
+            ".table {\n" +
+            "    width: 100%;\n" +
+            "    display: table;\n" +
+            "}\n\n" +
+            ".url {\n" +
+            "    color: #606060;\n" +
+            "}\n\n" +
+            ".row {\n" +
+            "    display: table-row;\n" +
+            "}\n\n" +
+            ".row-field {\n" +
+            "    padding: 5pt;\n" +
+            "    display: table-cell;\n" +
+            "    vertical-align: middle;\n" +
+            "    border-bottom: 1px solid gray;\n" +
+            "}\n\n" +
+            ".attribute {\n" +
+            "    border-right: 1px solid gray;\n" +
+            "}\n\n" +
+            "b.property {\n" +
+            "    color: #660E7A;\n" +
+            "}\n\n" +
+            "b.string {\n" +
+            "    color: #008000;\n" +
+            "}\n\n" +
+            "b.number {\n" +
+            "    font-weight: normal;\n" +
+            "    color: #0000FF;\n" +
+            "}\n\n" +
+            "b.keyword {\n" +
+            "    color: #000080;\n" +
+            '}';
+    
     @RequestMapping(value = "/", method = GET)
     public String getApiReference() {
         Map<RequestMappingInfo, HandlerMethod> requestMappings = this.handlerMapping.getHandlerMethods();
@@ -74,15 +144,20 @@ public class AppController {
                 .collect(Collectors.groupingBy(ControllerInfo::getControllerName));
         StringBuilder responseBuilder = new StringBuilder();
         
+        responseBuilder.append("<head><style>")
+                .append(CSS)
+                .append("</style></head><body><div class=\"container\">");
         controllers.forEach((controllerFullName, controllerInfo) -> {
             String apiSectionName = SPLIT_PATTERN.matcher(controllerFullName.replace("Controller", ""))
                     .replaceAll(REPLACEMENT_STRING);
             
             responseBuilder.append("<h1>")
                     .append(apiSectionName)
-                    .append("</h1><br/>\n");
+                    .append("</h1>\n");
             controllerInfo.forEach(responseBuilder::append);
         });
+        
+        responseBuilder.append("</div></body>");
         
         return responseBuilder.toString();
     }
