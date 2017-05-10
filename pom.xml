@@ -159,5 +159,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- TODO: change this after artifact has been published -->
+        <dependency>
+            <groupId>at.dom-l</groupId>
+            <artifactId>rest-api-info-generator</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

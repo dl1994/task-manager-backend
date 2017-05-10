@@ -1,5 +1,6 @@
 package at.doml.taskmanager.util;
 
+import at.doml.restinfo.TypeInformation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -56,7 +57,7 @@ public class TypeWriter {
     private interface CustomClassFieldFetcher {
         boolean canFetchFrom(Method method);
         
-        TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings);
+        TypeInformation fetchField(Method method, Map<String, String> typeParameterMappings);
     }
     
     private static class GetterFieldFetcher implements CustomClassFieldFetcher {
@@ -69,8 +70,8 @@ public class TypeWriter {
         }
         
         @Override
-        public TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
-            return new TypeParameterInformation(method.getGenericReturnType().getTypeName(), typeParameterMappings);
+        public TypeInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
+            return new TypeInformation(method.getGenericReturnType().getTypeName(), typeParameterMappings);
         }
     }
     
@@ -82,8 +83,8 @@ public class TypeWriter {
         }
         
         @Override
-        public TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
-            return new TypeParameterInformation(method.getGenericParameterTypes()[0].getTypeName(),
+        public TypeInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
+            return new TypeInformation(method.getGenericParameterTypes()[0].getTypeName(),
                     typeParameterMappings);
         }
     }
@@ -134,16 +135,16 @@ public class TypeWriter {
     }
     
     private static String stringify(Type type, CustomClassFieldFetcher fieldFetcher) {
-        return stringify(new TypeParameterInformation(type.getTypeName()), fieldFetcher, 1);
+        return stringify(new TypeInformation(type.getTypeName()), fieldFetcher, 1);
     }
     
-    private static String stringify(TypeParameterInformation typeParameterInformation,
+    private static String stringify(TypeInformation typeInformation,
                                     CustomClassFieldFetcher fieldFetcher, int indentLevel) {
-        if (typeParameterInformation.isArray()) {
-            return writeArray(typeParameterInformation, fieldFetcher, indentLevel);
+        if (typeInformation.isArray()) {
+            return writeArray(typeInformation, fieldFetcher, indentLevel);
         }
         
-        String basic = BASIC_WRITERS.get(typeParameterInformation.getType());
+        String basic = BASIC_WRITERS.get(typeInformation.getType());
         
         if (basic != null) {
             return basic;
@@ -152,7 +153,7 @@ public class TypeWriter {
         Class<?> clazz;
         
         try {
-            clazz = Class.forName(typeParameterInformation.getType());
+            clazz = Class.forName(typeInformation.getType());
         } catch (ClassNotFoundException ignored) {
             return "?";
         }
@@ -162,14 +163,14 @@ public class TypeWriter {
         }
         
         if (Collection.class.isAssignableFrom(clazz)) {
-            return writeCollection(typeParameterInformation, fieldFetcher, indentLevel);
+            return writeCollection(typeInformation, fieldFetcher, indentLevel);
         }
         
         if (Map.class.isAssignableFrom(clazz)) {
-            return writeMap(typeParameterInformation, fieldFetcher, indentLevel);
+            return writeMap(typeInformation, fieldFetcher, indentLevel);
         }
         
-        return writeClass(clazz, typeParameterInformation, fieldFetcher, indentLevel);
+        return writeClass(clazz, typeInformation, fieldFetcher, indentLevel);
     }
     
     private static String writeEnum(Class<?> clazz) {
@@ -190,24 +191,24 @@ public class TypeWriter {
         return stringBuilder.append(')').toString();
     }
     
-    private static String writeCollection(TypeParameterInformation typeParameterInformation,
+    private static String writeCollection(TypeInformation typeInformation,
                                           CustomClassFieldFetcher fieldFetcher, int indentLevel) {
-        return '[' + stringify(typeParameterInformation.getTypeParameters()[0], fieldFetcher, indentLevel) + ", ...]";
+        return '[' + stringify(typeInformation.getTypeParameters()[0], fieldFetcher, indentLevel) + ", ...]";
     }
     
-    private static String writeArray(TypeParameterInformation typeParameterInformation,
+    private static String writeArray(TypeInformation typeInformation,
                                      CustomClassFieldFetcher fieldFetcher, int indentLevel) {
-        return '[' + stringify(new TypeParameterInformation(
-                typeParameterInformation.getType(), typeParameterInformation.getTypeParameters(),
-                typeParameterInformation.getArrayDimension() - 1
+        return '[' + stringify(new TypeInformation(
+                typeInformation.getType(), typeInformation.getTypeParameters(),
+                typeInformation.getArrayDimension() - 1
         ), fieldFetcher, indentLevel) + ", ...]";
     }
     
-    private static String writeMap(TypeParameterInformation typeParameterInformation,
+    private static String writeMap(TypeInformation typeInformation,
                                    CustomClassFieldFetcher fieldFetcher, int indentLevel) {
-        TypeParameterInformation[] typeParameters = typeParameterInformation.getTypeParameters();
-        TypeParameterInformation keyType = typeParameters[0];
-        TypeParameterInformation valueType = typeParameters[1];
+        TypeInformation[] typeParameters = typeInformation.getTypeParameters();
+        TypeInformation keyType = typeParameters[0];
+        TypeInformation valueType = typeParameters[1];
         String indent = indent(indentLevel);
         
         return "{<br/>" + indent +
@@ -218,14 +219,14 @@ public class TypeWriter {
                 "<br/>" + indent + "...<br/>" + indent(indentLevel - 1) + '}';
     }
     
-    private static String writeClass(Class<?> clazz, TypeParameterInformation typeParameterInformation,
+    private static String writeClass(Class<?> clazz, TypeInformation typeInformation,
                                      CustomClassFieldFetcher fieldFetcher, int indentLevel) {
         Field[] publicFields = clazz.getFields();
         Method[] publicMethods = clazz.getMethods();
         Map<String, String> fields = new HashMap<>();
         Map<String, String> typeParameterMappings = new HashMap<>();
         TypeVariable<?>[] genericTypeParameters = clazz.getTypeParameters();
-        TypeParameterInformation[] actualTypeParameters = typeParameterInformation.getTypeParameters();
+        TypeInformation[] actualTypeParameters = typeInformation.getTypeParameters();
         
         int limit = Math.min(genericTypeParameters.length, actualTypeParameters.length);
         for (int i = 0; i < limit; i++) {
@@ -234,7 +235,7 @@ public class TypeWriter {
         
         for (Field publicField : publicFields) {
             fields.put(publicField.getName(), stringify(
-                    new TypeParameterInformation(publicField.getGenericType().getTypeName(), typeParameterMappings),
+                    new TypeInformation(publicField.getGenericType().getTypeName(), typeParameterMappings),
                     fieldFetcher, indentLevel + 1
             ));
         }
