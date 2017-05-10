@@ -3,6 +3,7 @@ package at.dom_l.task_manager.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class TypeWriter {
     private interface CustomClassFieldFetcher {
         boolean canFetchFrom(Method method);
         
-        TypeParameterInformation fetchField(Method method);
+        TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings);
     }
     
     private static class GetterFieldFetcher implements CustomClassFieldFetcher {
@@ -68,8 +69,8 @@ public class TypeWriter {
         }
         
         @Override
-        public TypeParameterInformation fetchField(Method method) {
-            return new TypeParameterInformation(method.getGenericReturnType().getTypeName());
+        public TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
+            return new TypeParameterInformation(method.getGenericReturnType().getTypeName(), typeParameterMappings);
         }
     }
     
@@ -81,8 +82,9 @@ public class TypeWriter {
         }
         
         @Override
-        public TypeParameterInformation fetchField(Method method) {
-            return new TypeParameterInformation(method.getGenericParameterTypes()[0].getTypeName());
+        public TypeParameterInformation fetchField(Method method, Map<String, String> typeParameterMappings) {
+            return new TypeParameterInformation(method.getGenericParameterTypes()[0].getTypeName(),
+                    typeParameterMappings);
         }
     }
     
@@ -221,14 +223,18 @@ public class TypeWriter {
         Field[] publicFields = clazz.getFields();
         Method[] publicMethods = clazz.getMethods();
         Map<String, String> fields = new HashMap<>();
+        Map<String, String> typeParameterMappings = new HashMap<>();
+        TypeVariable<?>[] genericTypeParameters = clazz.getTypeParameters();
+        TypeParameterInformation[] actualTypeParameters = typeParameterInformation.getTypeParameters();
         
-        if (typeParameterInformation.hasTypeParameters()) {
-            // TODO handle generic fields
+        int limit = Math.min(genericTypeParameters.length, actualTypeParameters.length);
+        for (int i = 0; i < limit; i++) {
+            typeParameterMappings.put(genericTypeParameters[i].getTypeName(), actualTypeParameters[i].getType());
         }
         
         for (Field publicField : publicFields) {
             fields.put(publicField.getName(), stringify(
-                    new TypeParameterInformation(publicField.getGenericType().getTypeName()),
+                    new TypeParameterInformation(publicField.getGenericType().getTypeName(), typeParameterMappings),
                     fieldFetcher, indentLevel + 1
             ));
         }
@@ -236,8 +242,8 @@ public class TypeWriter {
         for (Method publicMethod : publicMethods) {
             if (fieldFetcher.canFetchFrom(publicMethod)) {
                 fields.put(getFieldName(publicMethod.getName()), stringify(
-                        fieldFetcher.fetchField(publicMethod), fieldFetcher, indentLevel + 1
-                )); // TODO generic
+                        fieldFetcher.fetchField(publicMethod, typeParameterMappings), fieldFetcher, indentLevel + 1
+                ));
             }
         }
         

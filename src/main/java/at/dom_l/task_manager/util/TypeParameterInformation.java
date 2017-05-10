@@ -2,7 +2,9 @@ package at.dom_l.task_manager.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class TypeParameterInformation {
@@ -14,14 +16,14 @@ public class TypeParameterInformation {
     private static final Pattern ARRAY_REMOVAL_PATTERN = Pattern.compile("(\\[])*$");
     private static final Pattern CLOSING_DIAMOND_REMOVAL_PATTERN = Pattern.compile(">(\\[])*$");
     
-    public TypeParameterInformation(String type) {
+    public TypeParameterInformation(String type, Map<String, String> typeParameterMappings) {
         String trimmedType = type.trim();
         String[] split = trimmedType.split("<", 2);
         
         this.arrayDimension = findArrayDimension(trimmedType);
-        this.type = this.arrayDimension > 0
+        this.type = extractTypeFromMap(this.arrayDimension > 0
                 ? ARRAY_REMOVAL_PATTERN.matcher(split[0]).replaceAll("")
-                : split[0];
+                : split[0], typeParameterMappings);
         this.typeParameters = split.length == 1
                 ? new TypeParameterInformation[0]
                 : (Arrays.stream(splitTypeParameters(
@@ -30,10 +32,18 @@ public class TypeParameterInformation {
                 .toArray(TypeParameterInformation[]::new));
     }
     
+    public TypeParameterInformation(String type) {
+        this(type, Collections.emptyMap());
+    }
+    
     public TypeParameterInformation(String type, TypeParameterInformation[] typeParameters, int arrayDimension) {
         this.arrayDimension = arrayDimension;
         this.type = type;
         this.typeParameters = typeParameters.clone();
+    }
+    
+    private static String extractTypeFromMap(String key, Map<String, String> typeParameterMappings) {
+        return typeParameterMappings.getOrDefault(key, key);
     }
     
     private static int findArrayDimension(String type) {
@@ -81,10 +91,6 @@ public class TypeParameterInformation {
         }
         
         return splitTypeParameters;
-    }
-    
-    public boolean hasTypeParameters() {
-        return this.typeParameters.length > 0;
     }
     
     public String getType() {
